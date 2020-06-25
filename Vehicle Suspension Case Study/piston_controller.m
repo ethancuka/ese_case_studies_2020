@@ -6,9 +6,15 @@
 % The piston automatically accounts for gravity, so you do not need to
 % account for it in your function.
 
-function force = piston_controller(roadHeight, vehicleHeight, vehicleVelocity, vehicleAcceleration)
+% This piston has the following readings:
+% pistonLength: The current length of the piston in cm
+% vehicleVelocity: The current vertical velocity of the vehicle body
+% vehicleAcceleration: The current vertical acceleration of the vehicle
+% body.
+
+function force = piston_controller(pistonLength, vehicleVelocity, vehicleAcceleration)
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
 %%%%%%%%%%%%%%%%%%
-force = 1;
+force = 0;
 end

@@ -17,22 +17,11 @@ close all; % Terminate all existing figure dialogs
 % the case study document
 
 % Your goal for this first section is to simulate this input-output
-% equation in a manner of your choice. The vector roadSurface will act as
-% the discretely sampled input to your system and represents the height of
-% the road relative to an arbitrary reference point. Your simulation should
-% output another vector, of the same length as roadSurface, that contains
-% the height of the vehicle body relative to the same arbitrary reference
-% point. (See the diagram in the case study document)
-
-% Some ideas for how to execute this:
-% -Use ode45, a differential equation solver. See the documentation on
-%   ode45 for how to solve second-order systems.
-% -Simulate each timestep of the simulation manually using an euler
-%   approximation or other discrete method.
-% -Convert the input-output equation to a state-space model and use lsim()
-% -Express the system as a transfer function and use Simulink
-
-% Important: Neglect gravity.
+% equation by modeling it as a transfer function. Using the parameters
+% below and the tf() and lsim() commands, create and simulate the system.
+% Use the vector roadSurface as the input to your system. Use the
+% pre-written plots and animateCar() functions or create your own to
+% visualize the results of your simulation.
 
 %% Simulation Parameters:
 % Sim works best if T/dt is an integer
@@ -40,16 +29,15 @@ dt = .01;                 % Simulation interval in seconds
 T = 20;                   % Simulation length in seconds
 t = linspace(0, T, T/dt)';% Time vector for simulation
 v = 18;                   % Vehicle speed in m/s
-m = 500;                  % Weight placed on a particular wheel in kg
-k = 300;                  % Spring constant of suspension in N/m
-c = 1;                    % Damping coefficient of suspension in Ns/m
-
-bumpiness = 1;            % Amplitude of road noise in cm
-pothole_depth = 5;        % Depth of potholes in cm
+bumpiness = 2;            % Amplitude of road noise in cm
+pothole_depth = 6;        % Depth of potholes in cm
 pothole_width = 50;       % Width of potholes in cm
-
-%Use this as the input for the input-output equation
 roadSurface = generateTerrain(T, dt, v, bumpiness, pothole_depth, pothole_width);
+
+%% System Properties
+m = 500;                  % Weight placed on a particular wheel in kg
+k = 100000;               % Spring constant of suspension in N/m
+c = 5000;                 % Damping coefficient of suspension in Ns/m
 
 %% Simulation
 
@@ -57,52 +45,46 @@ roadSurface = generateTerrain(T, dt, v, bumpiness, pothole_depth, pothole_width)
 % YOUR CODE HERE %
 %%%%%%%%%%%%%%%%%%
 
-% Sample implementation
-% % Construct state space model
-% A = [0, 1; -k/m, -c/m];
-% B = [0;k/m];
-% C = [1,0];
-% D = [0];
-% 
-% x = x0;
-% y = zeros(T/dt,1);
-% N = T/dt;
-% for i = 1:N
-%     y(i) = C*x + D*r(i);
-%     x = A*x + B*r(i);
-% end
+
+%Sample implementation
+num = k;
+den = [m,c,k];
+transfer = tf(num, den);
+y = lsim(transfer, roadSurface, t);
+
+
 
 %% Visualize the results
-
 
 % This chunk plots the displacement of the road and the car alongside each
 % other. How well does the system eliminate potholes and noise?
 figure("Name","Suspension system plot");
 hold on;
-plot(y+.17) %Replace y with the output of your simulation
-plot(r+(pothole_depth+1)*.01)
+plot(t, y+.17) %Replace y with the output of your simulation
+plot(t, roadSurface+(pothole_depth+1)*.01)
 ylim([0,.25])
 legend(["Car Body", "Road Surface"])
 ylabel("Displacement (meters)")
 xlabel("Time (s)")
 hold off;
 
-% This chunk of code animates the sim results
+% This chunk of code animates the sim results. If you're having trouble
+% seeing the effect of bumps on your simulation, consider multiplying your
+% output vector by a scalar to make perturbations appear bigger.
 figure;
 hold on;
 animateCar(y, roadSurface, v, dt, T); %Replace y with the output of your simulation
 hold off;
 
 %% Section 2: Experimentation
-% Use the input-output equation shown in the case study document to
-% determine the transfer function of the system. Plot the poles and zeros of
-% the transfer function below. Now's your chance to play with this system:
-% Change the values of |m|, |k|, and |c| and observe the effect on the
-% transfer function and pole map. Also observe any relationships between
-% the behavior of your simulation and the location of poles and zeroes.
-% What happens as poles move further left? What happens as they move closer
-% to the real axis? Be sure to record these and any other observations 
-% in your writeup!
+% Using the transfer function you derived in the previous section, plot the poles and zeros
+% of the system. Now's your chance to play with this
+% system: Change the values of |m|, |k|, and |c| and observe the effect on
+% the transfer function and pole map. Also observe any relationships
+% between the behavior of your simulation and the location of poles and
+% zeroes. What happens as poles move further left? What happens as they
+% move closer to the real axis? Be sure to record these and any other
+% observations in your writeup!
 
 % Hint: You may find the tf() and pzmap() functions to be very useful.
 
@@ -115,10 +97,13 @@ hold off;
 % hold up to 1000 kg of passengers and cargo. Devise values of |k| and |c|
 % which absorb shocks and vibrations for both the loaded and unloaded
 % truck. For each case, simulate the result, derive the transfer function,
-% and plot the pole map as you did previously.
+% and plot the pole map as you did previously. Construct visualizations of
+% each model and compare the results. (You may use the animateCar()
+% function from before.)
 
 % Remember to divide the mass by 4 for both cases, as we assume 
-% each wheel suspends 1/4th of the entire truck.
+% each wheel suspends 1/4th of the entire truck, and our simulation only
+% models a single wheel.
 
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %

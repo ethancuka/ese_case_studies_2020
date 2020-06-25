@@ -28,7 +28,7 @@ close all; % Terminate all existing figure dialogs
 % Write your own piston_controller function and test it using the code
 % below.
 
-% Simulation parameters
+%% Simulation parameters
 dt = .01;                 % Simulation interval in seconds 
 T = 20;                   % Simulation length in seconds
 t = linspace(0, T, T/dt)';% Time vector for simulation
@@ -42,3 +42,41 @@ pothole_width = 50;       % Width of potholes in cm
 roadSurface = generateTerrain(T, dt, v, bumpiness, pothole_depth, pothole_width);
 
 
+num = {[k] [1]}
+den = {[m k c]}
+H = tf(num, den)
+
+
+% 
+% y = zeros(size(t));
+% vel = zeros(size(t));
+% accel = zeros(size(t));
+% 
+% for i = 1:length(t)-1
+%     accel(i+1) = 1/m*piston_controller(roadSurface(i), y(i), vel(i), accel(i));
+%     vel(i+1) = vel(i)+accel(i)*dt;
+%     y(i+1) = y(i) + vel(i)*dt + roadSurface(i+1)-roadSurface(i);
+% end
+
+
+%% Visualize the results
+
+% This chunk plots the displacement of the road and the car alongside each
+% other. How well does the system eliminate potholes and noise?
+figure("Name","Suspension system plot");
+hold on;
+plot(t,y+.17) %Replace y with the output of your simulation
+plot(t,roadSurface+(pothole_depth+1)*.01)
+ylim([0,.25])
+legend(["Car Body", "Road Surface"])
+ylabel("Displacement (meters)")
+xlabel("Time (s)")
+
+
+% This chunk of code animates the sim results. If you're having trouble
+% seeing the effect of bumps on your simulation, consider multiplying your
+% output vector by a scalar to make perturbations appear bigger.
+figure;
+hold on;
+animateCar(y, roadSurface, v, dt, T); %Replace y with the output of your simulation
+hold off;
