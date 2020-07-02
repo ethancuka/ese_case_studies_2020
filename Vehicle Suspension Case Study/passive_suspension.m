@@ -45,7 +45,6 @@ c = 5000;                 % Damping coefficient of suspension in Ns/m
 % YOUR CODE HERE %
 %%%%%%%%%%%%%%%%%%
 
-
 %Sample implementation
 num = k;
 den = [m,c,k];

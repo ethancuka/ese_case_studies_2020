@@ -8,8 +8,7 @@ close all; % Terminate all existing figure dialogs
 %% Section 1: Open Loop System
 % Consider the dynamics outlined in the case study document. Derive the
 % transfer function between the input (roadSurface) and the output if the
-% piston applies no force. Analyze the system's pole map. Is the system
-% stable? How can you tell? Record your observations in your writeup.
+% piston applies no force.
 
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
@@ -50,7 +49,7 @@ c = 5000;                 % Damping coefficient of suspension in Ns/m
 t = linspace(0, T, T/dt);
 x = zeros(4, length(t));
 for i = 1:length(t)-1
-%Calculate piston force
+%Calculate piston output
 x(4, i+1) = piston_controller(x(1,i), x(2,i), x(3,i));
 %Calculate acceleration
 x(3, i+1) = 1/m*(-k*(x(1,i)-roadSurface(i)) - c*x(2, i) + x(4, i+1));
@@ -82,24 +81,3 @@ figure;
 hold on;
 animateCar(y, roadSurface, v, dt, T);
 hold off;
-
-
-%% Analysis
-% How well did your controller improve the performance of the suspension
-% system? Test your controller by changing the mass of the vehicle as you
-% did in the passive suspension case study. Does the controller work well
-% for both a loaded and unloaded vehicle? Record observations and plots in
-% your write-up.
-
-%% Closed-Loop Transfer Function
-% Calculate the transfer function of your piston controller and find a way
-% to combine it with the open-loop transfer function to derive the full,
-% closed-loop transfer function. Plot the poles and zeros. Record your
-% observations in your writeup.
-
-%%%%%%%%%%%%%%%%%%
-% YOUR CODE HERE %
-%%%%%%%%%%%%%%%%%%
-
-%% Stability
-% What happens if you reverse the blah blah blah TODO

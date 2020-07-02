@@ -1,18 +1,20 @@
 %Devise a state feedback controller that uses sensor readings from the
-%vehicle and road to decide how much force to exert on it. Remember that
-%the piston has a minimum length of 5 cm and a maximum length of 17 cm. You
-%do not need to use all the arguments if you don't want to.
+%vehicle and road to decide how much force to exert on the vehicle body.
+%Force is measured in newtons, so you may need to apply a very large force
+%to see the system change significantly
 
 % The piston automatically accounts for gravity, so you do not need to
 % account for it in your function.
 
 % This piston has the following readings:
-% pistonLength: The current length of the piston in cm
-% vehicleVelocity: The current vertical velocity of the vehicle body
+% vehiclePosition: The current verticle position of the vehicle body,
+%                  measured relative to an equilibrium/starting point.
+%                  (meters)
+% vehicleVelocity: The current vertical velocity of the vehicle body (m/s)
 % vehicleAcceleration: The current vertical acceleration of the vehicle
-% body.
+%                      body. (m/s^2)
 
-function force = piston_controller(pistonLength, vehicleVelocity, vehicleAcceleration)
+function force = piston_controller(vehiclePosition, vehicleVelocity, vehicleAcceleration)
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
 %%%%%%%%%%%%%%%%%%

@@ -1,17 +1,35 @@
-function r = encode(message, pulse_shape, samplePeriod, symbolPeriod)
+% Curious how the encode and decode functions for this lab work? The answer
+% is suprisingly simple. Here's the function that turns your message into a
+% signal to be transmitted.
+
+function r = encode(message, pulse_shape, samplePeriod, symbolPeriod, figurePlotting)
+% Our encoder has to know how much time should pass between sending each
+% pulse. Since it works in discrete time using samples instead of seconds,
+% this line tell it how many samples to wait before sending the next pulse.
 samplesPerSymbol = symbolPeriod/samplePeriod;
 
-% Convert message to binary
+% Here we convert the given message from ASCII code into binary
 binCode = dec2bin(char(message));
 binCode = reshape(binCode',1,numel(binCode));
 binCode = logical(binCode(:)'-'0');
 
-% Convert binary to amplitude
+% A fancier transmitter would use a look-up table or some other method to
+% map bits to amplitude, but since we only have 2 symbols, we can use this
+% little trick to quickly map 1 to +1 and 0 to -1, converting our bit
+% sequence into amplitudes.
 modCode = binCode.*2-1;
 
-%Upsample
+% "Upsampling" the symbol map means placing zeroes in between the
+% entries. The number of zeros we add is based on our symbol period.
 upsamp = upsample(modCode,samplesPerSymbol);
 
-%Convolve with pulse
+if figurePlotting
+   figure;
+   plot(upsamp)
+   title("Upsampled Symbol-Sequence")
+end
+
+%We can think of our pulse shape as an impulse response and our upsampled
+%symbol stream as the input. 
 r = conv(upsamp, pulse_shape);
 end

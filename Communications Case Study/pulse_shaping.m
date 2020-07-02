@@ -2,6 +2,8 @@
 % This script includes code and instructions for the digital communications
 % case study for ESE 351
 
+close all; %Terminate existing figure dialogs
+
 %% Section 1: Pulse Design
 % In this section you will construct a pulse shape for sending messages via
 % a Pulse Amplitude Modulation system. You can do this in a number of
@@ -34,8 +36,7 @@ truncate = 3;              % Your pulse will probably be longer than a
                            
 t = (-truncate*Tsymb:Tsamp:truncate*Tsymb); %Generate time vector
 
-time_pulse = 0; %Your function here.
-
+time_pulse = 0.*t; %Your function here.
 
 %% Frequency Domain Design
 % You may find the fft() and fftshift() functions useful.
@@ -44,12 +45,12 @@ fsymb = 1/Tsymb;    %Frequency range of symbol
 
 % This chunk generates a frequency range that you may find useful.
 L = length(t);          % Define signal length
-f = fsamp*(0:(L/2))/L;     % Define Frequency range
+f = fsamp*(0:(L/2))/L;  % Define Frequency range
 f =[-flip(f), f];       % Construct 2-sided frequency axis
 f(length(f)/2) = [];    % Remove duplicate 0
 
 
-frequency_pulse = 0; %Your function here
+frequency_pulse = 0.*f; %Your function here
 
 %% Section 2: Analysis
 
@@ -80,7 +81,8 @@ frequency_pulse = 0; %Your function here
 % Remember that convolution in the time domain is equivalent to
 % multiplication in the frequency domain. Determine the fourier transform
 % of the autocorrelation function and compare it to the fourier transform
-% of your pulse shape. Record your observations in your writeup.
+% of your pulse shape. Plot them below and record your observations in your
+% writeup.
 
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
@@ -89,28 +91,30 @@ frequency_pulse = 0; %Your function here
 %%% The Nyquist Filtering Criteria
 % Consider the fourier transform of your pulse shape. Plot the fourier
 % transform alongside several copies of it shifted by integer multiples of
-% fsymb. Add up the resulting plots and comment on the results. What does
-% that tell you about the presence of inter-symbol interference in your
-% pulse shape? Record your observations in your writeup.
+% fsymb. Take the superposition of all these plots and comment on the
+% results. What does that tell you about the presence of inter-symbol
+% interference in your pulse shape? Record your observations in your
+% writeup.
 
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
 %%%%%%%%%%%%%%%%%%
-
 %% Section 3: Sending Messages
 % Use the encode() function to convert a message of your choice into a
 % digital signal using a binary Pulse Amplitude Modulation scheme. Plot the
-% resulting signal.Use the decode() function to convert the resulting
+% resulting signal. Use the decode() function to convert the resulting
 % signal back into a message. Was your message sent correctly? Change the
 % amount of noise in the transmitter. How does increasing or decreasing the
 % noise affect transmission? Record your observations in your writeup.
 
 message = "Your message here";
-noise = .2;
+noise = .2;             % Change this to modify the amount of noise
+enablePlotting = false; % Turn this on to see some of the intermittent 
+                        % steps of the encoding and decoding process
 
-r = encode(message, time_pulse, Tsamp, Tsymb); % Encode message
-r = r + normrnd(0,noise,size(r)) ;             % Add noise
-received_message = decode(r, time_pulse, Tsamp, Tsymb);
+r = encode(message, time_pulse, Tsamp, Tsymb, enablePlotting);          % Encode message
+r = r + normrnd(0,noise,size(r)) ;                                      % Add noise
+received_message = decode(r, time_pulse, Tsamp, Tsymb, enablePlotting); % Decode message
 
 %% Section 4: Optional Extension
 
@@ -121,6 +125,11 @@ received_message = decode(r, time_pulse, Tsamp, Tsymb);
 % message to you? Does the pulse shape have the desired characteristics?
 % (Short duration, narrow frequency representation, orthogonal to
 % time-delayed versions of itself?) Record your observations in your writeup.
+
+%%% Optional Extension: Match Filters
+% Examine the encode and decode functions included in the case study. Come
+% up with an explanation for how each of them works in your own words.
+% Record your observations in your writeup.
 
 %%% Optional Extension: Carrier Waves
 % Convolve your pulse shape with a high frequency cosine wave. Examine the
