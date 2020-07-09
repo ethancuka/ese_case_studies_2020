@@ -29,18 +29,22 @@ close all; %Terminate existing figure dialogs
 % For best results, ensure that symbol period is an integer multiple of
 % sample period.
 
-Tsamp = 1/1000;            % Sample period - the time between each sample.
+Tsamp = 1/4000;            % Sample period - the time between each sample.
 Tsymb = 8/1000;            % Symbol period - the time between each symbol
 symbolLength = Tsymb/Tsamp;% The duration, in samples, of each symbol
 
-truncate = 3;              % Your pulse will probably be longer than a 
+truncate = 10;              % Your pulse will probably be longer than a 
                            % single symbol period. This determines how many
                            % symbols into the past and future to cut it 
                            % off.
                            
 t = (-truncate*Tsymb:Tsamp:truncate*Tsymb); %Generate time vector
 
-time_pulse = 0.*t; %Your function here.
+
+% For simplicity, we will use a truncated sinc function as our pulse shape.
+% An Rcos pulse would work better, but most students will likely use a sinc
+% function.
+time_pulse = sinc(t/Tsymb); %Your function here.
 
 %% Frequency Domain Design
 % You may find the fft() and fftshift() functions useful.
@@ -54,7 +58,7 @@ f =[-flip(f), f];       % Construct 2-sided frequency axis
 f(length(f)/2) = [];    % Remove duplicate 0
 
 
-frequency_pulse = 0.*f; %Your function here
+frequency_pulse = abs(fftshift(fft(time_pulse))); %Your function here
 
 %% Section 2: Analysis
 
@@ -67,9 +71,28 @@ frequency_pulse = 0.*f; %Your function here
 % How well did your pulse shape accomplish both goals? What challenges and
 % trade-offs did you experience?
 
-%%%%%%%%%%%%%%%%%%
-% YOUR CODE HERE %
-%%%%%%%%%%%%%%%%%%
+figure;
+hold on;
+subplot(2,1,1)
+plot(t,time_pulse)
+title("Time Domain Pulse Shape")
+xlabel("Time (s)")
+ylabel("Amplitude")
+subplot(2,1,2)
+plot(f,frequency_pulse)
+xlim([-200 200])
+title("Frequency Domain Pulse Shape")
+xlabel("Frequency (Hz)")
+ylabel("|H(f)|")
+hold off;
+
+% The chosen pulse shape looks pretty good! While it is somewhat lengthy in
+% the time domain, and there is some rolloff in the frequency domain, it
+% occupies a fairly reasonable bandwidth, and we truncate it to keep it
+% from becoming too lengthy. We can reduce the rolloff and increase
+% resolution in the frequency domain by increasing the truncate length.
+% This reveals one of our core trade-offs: a pulse that is short in the
+% time domain will be wider in the frequency domain.
 
 %%% Autocorrelation and Orthogonality
 % Compute and plot the autocorrelation function of your pulse shape in the
@@ -77,9 +100,23 @@ frequency_pulse = 0.*f; %Your function here
 % about the orthogonality of your pulse with a time-delayed version of
 % itself? Record your observations in your writeup.
 
-%%%%%%%%%%%%%%%%%%
-% YOUR CODE HERE %
-%%%%%%%%%%%%%%%%%%
+autocorrelation = conv(time_pulse, time_pulse, 'same');
+figure;
+hold on;
+plot(t,autocorrelation)
+plot(t,zeros(size(t)))
+markers = t(1:symbolLength:end);
+plot(markers, zeros(size(markers)), 'o')
+title("Demonstrating Self-Orthogonality with Autocorrelation")
+xlabel("Time (s)")
+ylabel("r(t)")
+hold off;
+
+% Examining the plot, we can see that the autocorrelation function is zero
+% at integer multiples of Tsymb. This suggests that the function is
+% orthogonal to version of itself delayed or advanced by a symbol period.
+% Therefore, we can use this pulse shape and our receiver will be able to
+% seperate out each symbol from the one before and after it.
 
 %%% Fourier Transform of the Autocorrelation
 % Remember that convolution in the time domain is equivalent to
@@ -88,9 +125,25 @@ frequency_pulse = 0.*f; %Your function here
 % of your pulse shape. Plot them below and record your observations in your
 % writeup.
 
-%%%%%%%%%%%%%%%%%%
-% YOUR CODE HERE %
-%%%%%%%%%%%%%%%%%%
+autocorrelation_fft = abs(fftshift(fft(autocorrelation)));
+figure;
+hold on;
+plot(f,frequency_pulse)
+plot(f,autocorrelation_fft)
+plot(f,frequency_pulse.^2, '--')
+title("Comparing Frequency Domains of Pulse and Autocorrelation")
+xlim([-200 200])
+xlabel("Frequency (Hz)")
+legend(["H(f)", "R_f(f)", "H(f)^2"])
+hold off;
+
+% From this plot, we can see that the autocorrelation plot's frequency
+% domain representation is approximately equal to the square of the pulse
+% shape's frequency domain representation. This is because the
+% autocorrelation function is essentially the pulse convoluted with itself,
+% and convolution in the time domain is equivalent to multiplication in the
+% frequency domain.
+
 
 %%% The Nyquist Filtering Criteria
 % Consider the fourier transform of your pulse shape. Plot the fourier
@@ -99,10 +152,27 @@ frequency_pulse = 0.*f; %Your function here
 % results. What does that tell you about the presence of inter-symbol
 % interference in your pulse shape? Record your observations in your
 % writeup.
+shift = round(L*fsymb/fsamp);
+fft_advance = [zeros(1,shift) frequency_pulse(1:end-shift)]; 
+fft_delay = [frequency_pulse(shift+1:end) zeros(1,shift)] ;
+figure;
+hold on;
+plot(f,fft_advance)
+plot(f,fft_delay)
+plot(f,frequency_pulse)
+plot(f,fft_advance+fft_delay+frequency_pulse, 'LineWidth',3)
+legend(["Shifted Pulse", "Shifted Pulse", "Original Pulse", "Superposition"])
+title("Verifying the Nyquist Filtering Criteria")
+xlim([-400 500])
+xlabel("Frequency (Hz)")
+ylabel("|H(f)|")
+hold off;
 
-%%%%%%%%%%%%%%%%%%
-% YOUR CODE HERE %
-%%%%%%%%%%%%%%%%%%
+% From this plot, we can see that our pulse approximately satisfies the
+% Nyquist Filtering Criteria. While the jaggedness of our pulse-shape
+% causes some issues, we might presume that in continuous time our pulse
+% would more closely approximate the desired constant value.
+
 %% Section 3: Sending Messages
 % Use the encode() function to convert a message of your choice into a
 % digital signal using a binary Pulse Amplitude Modulation scheme. Plot the
@@ -111,8 +181,8 @@ frequency_pulse = 0.*f; %Your function here
 % amount of noise in the transmitter. How does increasing or decreasing the
 % noise affect transmission? Record your observations in your writeup.
 
-message = "Your message here";
-noise = .2;             % Change this to modify the amount of noise
+message = "I'm the boy mayor of second life, and I think dogs should be able to vote!";
+noise = .5;             % Change this to modify the amount of noise
 enablePlotting = false; % Turn this on to see some of the intermittent 
                         % steps of the encoding and decoding process
 
@@ -120,6 +190,13 @@ r = encode(message, time_pulse, Tsamp, Tsymb, enablePlotting);          % Encode
 r = r + normrnd(0,noise,size(r)) ;                                      % Add noise
 received_message = decode(r, time_pulse, Tsamp, Tsymb, enablePlotting); % Decode message
 
+disp(received_message)
+
+% Our message is sent without error! However, when we start to introduce
+% noise, the accuracy of our message falls drastically - characters start
+% to get entirely replaced.
+
+% We can compensate for this by increasing the amplitude of our pulse. 
 %% Section 4: Optional Extension
 
 %%% Optional Extension: Transmission and Reception
@@ -143,3 +220,68 @@ received_message = decode(r, time_pulse, Tsamp, Tsymb, enablePlotting); % Decode
 % this might this effect be used to ensure that different signals
 % transmitted at the same time do not interfere with one another? Record
 % your observations in your writeup.
+
+%Generate carrier wave
+carrier_frequency = 400;
+carrier = cos(carrier_frequency*2*pi*t);
+%Multiple with pulse
+carrier_pulse = time_pulse.*carrier;
+%Generate FFT
+carrier_fft = abs(fftshift(fft(carrier_pulse)));
+
+figure;
+hold on;
+subplot(2,1,1)
+plot(t,carrier_pulse)
+title("Carrier-Encoded Pulse Time Domain")
+xlabel("Time (s)")
+ylabel("Amplitude")
+subplot(2,1,2)
+plot(f,carrier_fft)
+title("Carrier-Encoded Pulse Frequency Domain")
+xlabel("Frequency (Hz)")
+ylabel("|H(f)|")
+hold off;
+
+% Examining the carrier-encoded pulse, we see that rather than one central
+% rectangular pulse centered at f=0, we get two smaller rectangular pulses,
+% each centered at +/-f_carrier. This is because element-wise
+% multiplication in the time domain is equal to convolution in the
+% frequency domain; we have essentially convolved our rectangular pulse
+% with the fourier transform of our carrier wave, i.e. two impulses at
+% +/-f_carrier.
+
+% We can use this method to transmit several signals with the same pulse
+% shape but different carrier frequencies, as they will occupy different
+% frequency bands.
+
+
+% Multiply a second time
+pulse_back = carrier_pulse.*carrier;
+pulse_back_fft = abs(fftshift(fft(pulse_back)));
+
+figure;
+hold on;
+subplot(2,1,1)
+hold on;
+plot(t,time_pulse)
+plot(t,pulse_back)
+hold off;
+title("Time Domain Pulse Shapes")
+legend(["Original Pulse", "Pulse after Carrier Modulation"])
+xlabel("Time (s)")
+ylabel("Amplitude")
+subplot(2,1,2)
+hold on;
+plot(f,frequency_pulse)
+plot(f,pulse_back_fft)
+hold off;
+title("Frequency Domain Pulse Shapes")
+legend(["Original Pulse", "Pulse after Carrier Modulation"])
+xlabel("Frequency (Hz)")
+ylabel("|H(f)|")
+hold off;
+
+% Multiplying it through a second time, we have essentially recovered a
+% superposition of our waveform and the carrier wave. A low pass filter
+% could easily recover just the original pulse shape.

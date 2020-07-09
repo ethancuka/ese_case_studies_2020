@@ -30,6 +30,9 @@ if figurePlotting
 end
 
 %We can think of our pulse shape as an impulse response and our upsampled
-%symbol stream as the input. 
-r = conv(upsamp, pulse_shape);
+%symbol stream as the input. Every symbol period, we hit our impulse
+%response with a pulse that is either positive or negative, depending on
+%whether we want to send a 1 or a 0. The convolution of all of these
+%impulse responses is the resulting signal we transmit.
+r =  conv(upsamp, pulse_shape);
 end

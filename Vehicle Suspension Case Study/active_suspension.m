@@ -4,6 +4,10 @@ close all; % Terminate all existing figure dialogs
 %% Active Suspension Case Study
 % This script includes code and instructions for the active suspension
 % portion of the MATLAB case study for ESE 351.
+% 
+% Created by Ethan Cuka for the McKelvey School of Engineering at
+% Washington University in St. Louis
+% Last updated: 7/8/2020
 
 %% Section 1: Open Loop System
 % Consider the dynamics outlined in the case study document. Derive the

@@ -4,6 +4,10 @@ close all; % Terminate all existing figure dialogs
 %% Passive Suspension Case Study
 % This script includes code and instructions for the passive suspension
 % portion of the MATLAB case study for ESE 351.
+%
+% Created by Ethan Cuka for the McKelvey School of Engineering at
+% Washington University in St. Louis
+% Last updated: 7/8/2020
 
 
 %% Section 1: Model
@@ -44,14 +48,6 @@ c = 5000;                 % Damping coefficient of suspension in Ns/m
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
 %%%%%%%%%%%%%%%%%%
-
-%Sample implementation
-num = k;
-den = [m,c,k];
-transfer = tf(num, den);
-y = lsim(transfer, roadSurface, t);
-
-
 
 %% Visualize the results
 
