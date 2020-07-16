@@ -22,13 +22,15 @@ close all; %Terminate existing figure dialogs
 
 %% Time Domain Design
 % By default, sample rate is set to 1 kHz and symbol rate is set to 1/8
-% kHz. This means that every 8/1000 seconds, the transmitter will send
-% another pulse. It does not necessarily mean the previous pulse will have
-% finished yet: your pulse will probably be longer than the symbol period.
+% kHz. You may change these as necessary. This means that every 8ms, the
+% transmitter will send another pulse with a new symbol encoded into it. It
+% does not necessarily mean the previous pulse will have finished yet: your
+% pulse will probably be longer than the symbol period. Pulses will overlap
+% with one another, so it is vital that your pulse shape is orthogonal to
+% time-delayed versions of itself.
 
 % For best results, ensure that symbol period is an integer multiple of
-% sample period.
-
+% sample period so that symbolLength is an integer.
 Tsamp = 1/1000;            % Sample period - the time between each sample.
 Tsymb = 8/1000;            % Symbol period - the time between each symbol
 symbolLength = Tsymb/Tsamp;% The duration, in samples, of each symbol
@@ -36,7 +38,9 @@ symbolLength = Tsymb/Tsamp;% The duration, in samples, of each symbol
 truncate = 3;              % Your pulse will probably be longer than a 
                            % single symbol period. This determines how many
                            % symbols into the past and future to cut it 
-                           % off.
+                           % off. Increasing this value will allow you to
+                           % make your pulse longer which could increase
+                           % the accuracy of your fourier transform.
                            
 t = (-truncate*Tsymb:Tsamp:truncate*Tsymb); %Generate time vector
 
@@ -73,7 +77,8 @@ frequency_pulse = 0.*f; %Your function here
 
 %%% Autocorrelation and Orthogonality
 % Compute and plot the autocorrelation function of your pulse shape in the
-% time domain. At which points, if any, is it zero? What does that tell you
+% time domain. The autocorrelation function is the convolution of the pulse
+% with itself. At which points, if any, is it zero? What does that tell you
 % about the orthogonality of your pulse with a time-delayed version of
 % itself? Record your observations in your writeup.
 
@@ -99,6 +104,11 @@ frequency_pulse = 0.*f; %Your function here
 % results. What does that tell you about the presence of inter-symbol
 % interference in your pulse shape? Record your observations in your
 % writeup.
+
+shift = round(L*fsymb/fsamp); % If you used the frequency range provided by 
+                              % the sample code above, a frequency shift of
+                              % fsymb corrosponds to shifting by this many 
+                              % samples.
 
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
@@ -143,3 +153,10 @@ received_message = decode(r, time_pulse, Tsamp, Tsymb, enablePlotting); % Decode
 % this might this effect be used to ensure that different signals
 % transmitted at the same time do not interfere with one another? Record
 % your observations in your writeup.
+
+carrier_frequency = 400;
+carrier_wave = cos(carrier_frequency*2*pi*t);
+
+%%%%%%%%%%%%%%%%%%
+% YOUR CODE HERE %
+%%%%%%%%%%%%%%%%%%

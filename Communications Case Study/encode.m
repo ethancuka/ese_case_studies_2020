@@ -23,16 +23,31 @@ modCode = binCode.*2-1;
 % entries. The number of zeros we add is based on our symbol period.
 upsamp = upsample(modCode,samplesPerSymbol);
 
-if figurePlotting
-   figure;
-   plot(upsamp)
-   title("Upsampled Symbol-Sequence")
-end
-
 %We can think of our pulse shape as an impulse response and our upsampled
 %symbol stream as the input. Every symbol period, we hit our impulse
 %response with a pulse that is either positive or negative, depending on
 %whether we want to send a 1 or a 0. The convolution of all of these
 %impulse responses is the resulting signal we transmit.
 r =  conv(upsamp, pulse_shape);
+
+
+% This bit down here just plots figures,
+if figurePlotting
+   t = 0:samplePeriod:(length(upsamp)-1)*samplePeriod;
+   figure;
+   hold on;
+   plot(t*1000,upsamp)
+   title("Upsampled Symbol Sequence")
+   xlabel("Time (ms)")
+   ylim([-1.5,1.5])
+   hold off;
+   
+   t = 0:samplePeriod:(length(r)-1)*samplePeriod;
+   figure;
+   hold on;
+   plot(t*1000, r)
+   title("Transmitted Signal")
+   xlabel("Time (ms)")
+   hold off;
+end
 end

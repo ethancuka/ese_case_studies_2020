@@ -12,8 +12,9 @@ close all; % Terminate all existing figure dialogs
 %% Section 1: Open Loop System
 % Consider the dynamics outlined in the case study document. Derive the
 % transfer function between the input (roadSurface) and the output if the
-% piston applies no force. Analyze the system's pole map. Is the system
-% stable? How can you tell? Record your observations in your writeup.
+% piston applies no force. (It will resemble your work on the previous
+% section) Analyze the system's pole map. Is the system stable? How can you
+% tell? Record your observations in your writeup.
 
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
@@ -26,6 +27,9 @@ close all; % Terminate all existing figure dialogs
 % the piston should apply, which can be positive or negative. (If it is
 % positive, the piston will attempt to expand. If it is negative the piston
 % will attempt to contract.)
+
+% Your goal is to construct a piston_controller function that will improve
+% the 
 
 % Write your own piston_controller function and test it using the code
 % below.
@@ -95,15 +99,16 @@ hold off;
 % for both a loaded and unloaded vehicle? Record observations and plots in
 % your write-up.
 
-%% Closed-Loop Transfer Function
-% Calculate the transfer function of your piston controller and find a way
-% to combine it with the open-loop transfer function to derive the full,
-% closed-loop transfer function. Plot the poles and zeros. Record your
-% observations in your writeup.
-
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
 %%%%%%%%%%%%%%%%%%
 
-%% Stability
-% What happens if you reverse the blah blah blah TODO
+%% Closed-Loop Transfer Function
+% Calculate the transfer function of the closed-loop system. Plot the poles
+% and zeros. Record your observations in your writeup. (A good way to start
+% this might be to substitute your piston controller function into the
+% input-output equation in the case study writeup)
+
+%%%%%%%%%%%%%%%%%%
+% YOUR CODE HERE %
+%%%%%%%%%%%%%%%%%%

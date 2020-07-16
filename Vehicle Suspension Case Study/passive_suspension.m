@@ -22,10 +22,11 @@ close all; % Terminate all existing figure dialogs
 
 % Your goal for this first section is to simulate this input-output
 % equation by modeling it as a transfer function. Using the parameters
-% below and the tf() and lsim() commands, create and simulate the system.
-% Use the vector roadSurface as the input to your system. Use the
-% pre-written plots and animateCar() functions or create your own to
-% visualize the results of your simulation.
+% below, create and simulate the system. Use the vector roadSurface as the
+% input to your system. Use the pre-written plots and animateCar()
+% functions or create your own to visualize the results of your simulation.
+
+% You may find the tf() and lsim() functions to be very useful.
 
 %% Simulation Parameters:
 % Sim works best if T/dt is an integer
@@ -72,8 +73,8 @@ animateCar(y, roadSurface, v, dt, T); %Replace y with the output of your simulat
 hold off;
 
 %% Section 2: Experimentation
-% Using the transfer function you derived in the previous section, plot the poles and zeros
-% of the system. Now's your chance to play with this
+% Using the transfer function you derived in the previous section, plot the
+% poles and zeros of the system. Now's your chance to play with this
 % system: Change the values of |m|, |k|, and |c| and observe the effect on
 % the transfer function and pole map. Also observe any relationships
 % between the behavior of your simulation and the location of poles and
@@ -81,20 +82,22 @@ hold off;
 % move closer to the real axis? Be sure to record these and any other
 % observations in your writeup!
 
-% Hint: You may find the tf() and pzmap() functions to be very useful.
+% Hint: You may find the tf() and pzmap() or pzplot() functions to be very
+% useful.
 
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
 %%%%%%%%%%%%%%%%%%
 
 %% Section 3: Case Study
-% Consider a heavy-duty pickup truck with a mass of 3000 kg that can 
-% hold up to 1000 kg of passengers and cargo. Devise values of |k| and |c|
-% which absorb shocks and vibrations for both the loaded and unloaded
-% truck. For each case, simulate the result, derive the transfer function,
-% and plot the pole map as you did previously. Construct visualizations of
-% each model and compare the results. (You may use the animateCar()
-% function from before.)
+% Consider a heavy-duty pickup truck with a mass of 3000 kg that can hold
+% up to 1000 kg of passengers and cargo. In order to support the mass of
+% the truck, the spring constant must be at least 200,000 n/m. Devise
+% values of |k| and |c| which absorb shocks and vibrations for the truck
+% when it is both loaded and unloaded. For each case, simulate the result,
+% derive the transfer function, and plot the pole map as you did
+% previously. Construct visualizations of each model and compare the
+% results. (You may use the animateCar() function from before.)
 
 % Remember to divide the mass by 4 for both cases, as we assume 
 % each wheel suspends 1/4th of the entire truck, and our simulation only

@@ -39,10 +39,10 @@ m = 500;                  % Weight placed on a particular wheel in kg
 k = 200000;               % Spring constant of suspension in N/m
 c = 5000;                 % Damping coefficient of suspension in Ns/m
 
-%% Simulation
+%% Sample Implementation
 % In this section we consider two different way to implement the
 % simulation, by using lsim() and by manually computing each step in what
-% is effectively an implementation of the euler method.
+% is effectively an implementation of a simple forward euler approximation
 
 % lsim() method:
 num = k;
@@ -64,7 +64,8 @@ y_2 = x(1,:);
 
 
 %% Comparison
-% These two methods of simulation were consistent with one another.
+% These two methods of simulation were consistent with one another. The
+% forward euler method is less accurate.
 figure;
 hold on;
 title("Comparison of two simulation methods")
