@@ -33,7 +33,7 @@ Tsamp = 1/4000;            % Sample period - the time between each sample.
 Tsymb = 8/1000;            % Symbol period - the time between each symbol
 symbolLength = Tsymb/Tsamp;% The duration, in samples, of each symbol
 
-truncate = 5;              % Your pulse will probably be longer than a 
+truncate = 7;              % Your pulse will probably be longer than a 
                            % single symbol period. This determines how many
                            % symbols into the past and future to cut it 
                            % off.
@@ -181,8 +181,8 @@ hold off;
 % amount of noise in the transmitter. How does increasing or decreasing the
 % noise affect transmission? Record your observations in your writeup.
 
-message = "Dogs";
-noise = .5;             % Change this to modify the amount of noise
+message = "The quick brown fox jumped over the lazy dog";
+noise = 1;             % Change this to modify the amount of noise
 enablePlotting = true; % Turn this on to see some of the intermittent 
                         % steps of the encoding and decoding process
 

@@ -9,6 +9,7 @@ title("Sensor Layout Diagram")
 %% data traces
 figure, semilogy(data(info.pairs.r3d < 30,:)')
 title("Data Traces")
+
 %% LFO 
 figure, semilogy(info.pairs.r3d,mean(data,2),'.')
 title("LFO")
@@ -20,7 +21,7 @@ y = -log(bsxfun(@times,data,1./mean(data,2)));
 
 %% log-ratio signals
 % This plot 
-maxDistance = 40
+maxDistance = 40;
 
 figure, imagesc(y(info.pairs.r3d<maxDistance,:)), caxis([-.2 .2])
 title("Log-Ratio Signals")
@@ -51,61 +52,75 @@ imagesc(ybp(info.pairs.NN==2 & info.pairs.WL == 2,:)), caxis([-.02 .02]), colorb
 
 %% temp scratch
 
+% Only consider adjacent source-detectors.
 dmy = ybp(info.pairs.NN==2 & info.pairs.WL == 2,:);
+
+%Compute and plot Fourier Transform
 DMY = fft(dmy,[],2);
 fs = info.system.framerate;
 f = [0:fs/size(dmy,2):fs-fs/size(dmy,2)];
-figure, plot(f,abs(DMY'))
-figure, plot(dmy(40,:))
-figure, plot(f,abs(DMY(40,:)))
+figure;
+    hold on;
+        plot(f,abs(DMY));
+        title("Fourier Transform")
+        xlabel("Frequency (Hz)")
+        ylabel("|H(f)|")
+        xlim([0 .25])
+    hold off;
+
+% Estimate phase angle of the fourier transform at the stimulus frequency
 pEst = angle(DMY(:,13));
-hist(pEst)
-hist(pEst,32)
+
+% Display histogram of most common phases.
+figure;
+    hist(pEst,32)
+
+%Generate map of "halfway points" between sources and detectors.
 measInd = info.pairs.NN==2 & info.pairs.WL == 2;
-
 mPos = .5*(info.optodes.dpos2(info.pairs.Det(measInd),:)+info.optodes.spos2(info.pairs.Src(measInd),:));
-figure
-plot(mPos(:,1),mPos(:,2),'*')
-axis image
-hold on
-plot(info.optodes.dpos2(info.pairs.Det(measInd),1),info.optodes.dpos2(info.pairs.Det(measInd),2),'ro')
-plot(info.optodes.dpos2(info.pairs.Src(measInd),1),info.optodes.dpos2(info.pairs.Src(measInd),2),'gx')
-plot(info.optodes.spos2(info.pairs.Src(measInd),1),info.optodes.spos2(info.pairs.Src(measInd),2),'gx')
 
-plot3(mPos(:,1),mPos(:,2),pEst,'*')
-axis image
-help plot3
-help plot
-colormap winter
-cMap = hot(128);
+% Generate map of source and detector locations, marking the mean positions
+% between them NOTE: not adjacent detectors, only ones with distance 2
+figure;
+    hold on;
+        title("Source-Detector Location Map")
+        plot(mPos(:,1),mPos(:,2),'*', "MarkerSize", 7)
+        plot(info.optodes.dpos2(info.pairs.Det(measInd),1),info.optodes.dpos2(info.pairs.Det(measInd),2),'ro', "MarkerSize", 3)
+        plot(info.optodes.spos2(info.pairs.Src(measInd),1),info.optodes.spos2(info.pairs.Src(measInd),2),'gx', "MarkerSize", 3)
+        legend(["Mean Positions", "Detector Positions", "Source Positions"])
+        axis image
+    hold off;
 
-figure, plot3(mPos(:,1),mPos(:,2),pEst,cMap(max(round(127*(pEst+pi)/(2*pi))+1)))
-cMap(max(round(127*(pEst+pi)/(2*pi))+1),:)
-cMap((round(127*(pEst+pi)/(2*pi))+1),:)
-figure, plot3(mPos(:,1),mPos(:,2),pEst,cMap((round(127*(pEst+pi)/(2*pi))+1),:))
-size(cMap((round(127*(pEst+pi)/(2*pi))+1),:))
-figure
-for i = 1:128
-plot3(mPos(i,1),mPos(i,2),pEst(i),cMap((round(127*(pEst(i)+pi)/(2*pi))+1),:)), hold on
+% Generate colored 3d map of approximate phase of each source-detector
+% pair.
+figure;
+    hold on;
+        title("Rotation Phase vs. Optode Position")
+        scatter3(mPos(:,1),mPos(:,2),pEst, 36, pEst, 'filled')
+        colormap jet
+        colorbar
+        view(3)
+        xlabel("Measurement Position (Horizontal)")
+        ylabel("Measurement Position (Vertical)")
+        zlabel("Approximate Phase (Rads")
+        axis([-60 60 -60 60])
+    hold off;
+
+    
+%% Test: simple estimation of phase using norm (not robust)
+%Grab a snapshot of the brain at a particular moment. Ideally this should
+%actually be testing data not training data
+slice = data(:,randi([1, size(data,2)]));
+
+%Find moment in time that most closely corresponds to our snapshot
+minDist = Inf;
+id = 0;
+for i = 1:size(dmy,2)
+dist = norm(slice(info.pairs.NN==2 & info.pairs.WL == 2,:)-dmy(:,i));
+if dist < minDist
+    id = i;
+    minDist = dist;
 end
-cMap((round(127*(pEst(i)+pi)/(2*pi))+1),:)
-plot3(mPos(i,1),mPos(i,2),pEst(i),'r*'), hold on
-plot3(mPos(i,1),mPos(i,2),pEst(i),cMap((round(127*(pEst(i)+pi)/(2*pi))+1),:)), hold on
-plot(mPos(i,1),mPos(i,2),cMap((round(127*(pEst(i)+pi)/(2*pi))+1),:)), hold on
-mPos(i,1)
-mPos(i,2)
-cMap((round(127*(pEst(i)+pi)/(2*pi))+1),:)
-plot(1,2,[0 .5 0])
-help plot
-plot(1,2,[0 .5 0])
-plot(1,2,'Color',[0 .5 0])
-for i = 1:128
-plot(mPos(i,1),mPos(i,2),'Color',cMap((round(127*(pEst(i)+pi)/(2*pi))+1),:)), hold on
 end
-figure
-hold on
-for i = 1:128
-plot(mPos(i,1),mPos(i,2),'Color',cMap((round(127*(pEst(i)+pi)/(2*pi))+1),:)), hold on
-end
-axis image
-fNIRSCaseStudySample
+% dumb estimate???
+pGuess = mod(id/info.system.framerate*2*pi/36, 2*pi);
