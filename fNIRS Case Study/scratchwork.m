@@ -54,14 +54,13 @@ imagesc(ybp(info.pairs.NN==2 & info.pairs.WL == 2,:)), caxis([-.02 .02]), colorb
 
 % Only consider adjacent source-detectors.
 dmy = ybp(info.pairs.NN==2 & info.pairs.WL == 2,:);
-
 %Compute and plot Fourier Transform
 DMY = fft(dmy,[],2);
 fs = info.system.framerate;
 f = [0:fs/size(dmy,2):fs-fs/size(dmy,2)];
 figure;
     hold on;
-        plot(f,abs(DMY));
+        plot(f,abs(DMY), "LineWidth", 1);
         title("Fourier Transform")
         xlabel("Frequency (Hz)")
         ylabel("|H(f)|")
@@ -77,6 +76,8 @@ figure;
 
 %Generate map of "halfway points" between sources and detectors.
 measInd = info.pairs.NN==2 & info.pairs.WL == 2;
+
+
 mPos = .5*(info.optodes.dpos2(info.pairs.Det(measInd),:)+info.optodes.spos2(info.pairs.Src(measInd),:));
 
 % Generate map of source and detector locations, marking the mean positions
@@ -108,19 +109,19 @@ figure;
 
     
 %% Test: simple estimation of phase using norm (not robust)
-%Grab a snapshot of the brain at a particular moment. Ideally this should
-%actually be testing data not training data
-slice = data(:,randi([1, size(data,2)]));
-
-%Find moment in time that most closely corresponds to our snapshot
-minDist = Inf;
-id = 0;
-for i = 1:size(dmy,2)
-dist = norm(slice(info.pairs.NN==2 & info.pairs.WL == 2,:)-dmy(:,i));
-if dist < minDist
-    id = i;
-    minDist = dist;
-end
-end
-% dumb estimate???
-pGuess = mod(id/info.system.framerate*2*pi/36, 2*pi);
+% %Grab a snapshot of the brain at a particular moment. Ideally this should
+% %actually be testing data not training data
+% slice = data(:,randi([1, size(data,2)]));
+% 
+% %Find moment in time that most closely corresponds to our snapshot
+% minDist = Inf;
+% id = 0;
+% for i = 1:size(dmy,2)
+% dist = norm(slice(info.pairs.NN==2 & info.pairs.WL == 2,:)-dmy(:,i));
+% if dist < minDist
+%     id = i;
+%     minDist = dist;
+% end
+% end
+% % dumb estimate???
+% pGuess = mod(id/info.system.framerate*2*pi/36, 2*pi);

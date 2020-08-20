@@ -2,10 +2,14 @@ T = 3 %Simulation duration
 
 %% Set circuit parameters
 %Circuits 1 and 2
+    %Cutoff = 80 Hz
 R = 1000
 C = 2e-6
 
+
 %Circuit 3
+    %Low cutoff = 200 Hz
+    %High cutoff = 2.5 kHz
 R_1 = 320
 C_1 = 2e-7
 
@@ -17,6 +21,7 @@ C_2 = 2e-6
 
 % Your audio here
 [audio_timeseries, Fscustom] = sound2ts("evillaugh.wav", T, false);
+% Logarithmic chirp sample
 [chirp_timeseries, Fs] = sound2ts("chirp.wav", T, false);
 
 if ~(Fscustom==Fs)

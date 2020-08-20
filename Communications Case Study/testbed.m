@@ -1,39 +1,56 @@
 close all;
 % message = "Dog";
 %
-w = 100
-t = 0:.001:(2*3*pi/100);
-x = sin(100*t)
-y = sin(100*(t-pi/4))/(10*sqrt(2))
-figure;
-title("Input and Output of a Simple Transfer Function")
-hold on;
-plot(t,x)
-plot(t,y)
-legend(["Input", "Output"])
-% Tsamp = 1/4000;            % Sample period - the time between each sample.
-% Tsymb = 8/1000;            % Symbol period - the time between each symbol
-% symbolLength = Tsymb/Tsamp;% The duration, in samples, of each symbol
-% 
-% truncate = 7;              % Your pulse will probably be longer than a 
-%                            % single symbol period. This determines how many
-%                            % symbols into the past and future to cut it 
-%                            % off.
-%                            
-% t = (-truncate*Tsymb:Tsamp:truncate*Tsymb); %Generate time vector
-% 
-% 
-% % For simplicity, we will use a truncated sinc function as our pulse shape.
-% % An Rcos pulse would work better, but most students will likely use a sinc
-% % function.
-% time_pulse = sinc(t/Tsymb); %Your function here.
+% w = 100
+% t = 0:.001:(2*3*pi/100);
+% x = sin(100*t)
+% y = sin(100*(t-pi/4))/(10*sqrt(2))
 % figure;
+% title("Input and Output of a Simple Transfer Function")
 % hold on;
-% plot(t*1000, time_pulse, 'LineWidth', 3)
-% title("Pulse Shape")
-% ylabel("Amplitude")
-% xlabel("Time (ms)")
-% grid on;
+% plot(t,x)
+% plot(t,y)
+% legend(["Input", "Output"])
+Tsamp = 1/8000;            % Sample period - the time between each sample.
+Tsymb = 8/1000;            % Symbol period - the time between each symbol
+symbolLength = Tsymb/Tsamp;% The duration, in samples, of each symbol
+
+truncate = 8;              % Your pulse will probably be longer than a 
+                           % single symbol period. This determines how many
+                           % symbols into the past and future to cut it 
+                           % off.
+                           
+t = (-truncate*Tsymb:Tsamp:truncate*Tsymb); %Generate time vector
+
+
+% For simplicity, we will use a truncated sinc function as our pulse shape.
+% An Rcos pulse would work better, but most students will likely use a sinc
+% function.
+time_pulse = sinc(t/Tsymb); %Your function here.
+%time_pulse = rcosdesign(0.25,truncate*2,symbolLength);
+autocorrelation = conv(time_pulse, time_pulse, 'same')
+ac2 = conv(time_pulse, time_pulse)
+trim = length(ac2)-length(t)
+ac2 = ac2(trim/2:end-trim/2-1)
+
+figure;
+hold on;
+subplot(1,2,1)
+plot(t*1000, time_pulse, 'LineWidth', 2)
+title("Pulse Shape")
+ylabel("Amplitude")
+xlabel("Time (ms)")
+xticks([-56:8:56])
+grid on;
+subplot(1,2,2)
+hold on;
+plot(t*1000, ac2/max(ac2), 'LineWidth', 2)
+title("Normalized Autocorrelation")
+ylabel("Amplitude")
+xlabel("Time (ms)")
+xticks([-56:8:56])
+grid on;
+
 % 
 % symbols = [0, 7, -1, -3, -3, 3, 7, 3];
 % upsamp = upsample(symbols, symbolLength)

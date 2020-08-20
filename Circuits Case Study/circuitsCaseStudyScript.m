@@ -15,7 +15,7 @@ input = input - mean(input);
 % Plot input and output in time domain
 figure("Name","Time Series")
 subplot(2,1,1), plot(t,output),  axis('tight'), grid('on'), title('Output')
-subplot(2,1,2), plot(t,input),  axis('tight'), grid('on'), title('Input')
+subplot(2,1,2), plot(t(1:length(input)),input),  axis('tight'), grid('on'), title('Input')
 
 % Compute Power Spectral Density of input and output
 
