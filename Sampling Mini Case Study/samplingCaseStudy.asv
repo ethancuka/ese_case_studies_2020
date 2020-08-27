@@ -1,0 +1,11 @@
+
+close all;
+
+
+% Sampling and undersampling
+
+
+
+
+%% Interpolation
+% The lowsample variable in the workspace is a timeseries re

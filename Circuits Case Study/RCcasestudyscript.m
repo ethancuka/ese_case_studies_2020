@@ -1,36 +1,44 @@
 %% MATLAB script for Circuits case study
-% This script performs many of the same functions as the RCcasestudy
-% simulink model. Part 
+% This script contains everything you'll need for the MATLAB portion of the
+% RC circuits case study. 
+
+
 close all;  % Close existing figure dialogs
-run init.m; % Initialize resistor and capacitor values and sample rate
+%% Set simulation parameters
+T = 3;                 % Simulation duration in seconds
+dT = 44100;             % Sample rate
+t = (0:1/dT:(T-1/dT));  % Time vector
 
-%Define transfer functions
-circuit1 = tf(1, [R*C 1]);
-circuit2 = tf([R*C 0], [R*C 1]);
-circuit3 = tf(1, [R_1*C_1 1])*tf([R_2*C_2 0], [R_2*C_2 1]);
+%% Set circuit parameters
+%Circuits 1 and 2
+R = 1000;
+C = 2e-6;
 
-% Construct input signal
-t = (0:1/Fs:(T-1/Fs));
-signal = sin(10*2*pi*t);
-signal = chirp_timeseries.data;
+%Circuit 3
+R_1 = 320;
+C_1 = 2e-7;
+R_2 = 400;
+C_2 = 2e-6;
 
-% Simulate results
-c1out = lsim(circuit1, signal, t);
-c2out = lsim(circuit2, signal, t);
-c3out = lsim(circuit3, signal, t);
+% Define circuit impulse responses
+circuit1 = impulse(tf(1, [R*C 1]),t);       % Generate impulse response for circuit 1
+circuit2 = impulse(tf([R*C 0], [R*C 1]),t); % Generate impulse response for circuit 2
+circuit3 = impulse(tf(1, [R_1*C_1 1])*tf([R_2*C_2 0], [R_2*C_2 1]),t);  % Generate impulse response for circuit 3
+%% Load external sound files
+% For best results, use audio sampled at 44100 Hz.
 
-% Show results
-figure("Name", "Time Series");
-subplot(2,2,1), plot(t,signal), title("Original Signal")
-ax1 = gca;
-subplot(2,2,2), plot(t,c1out), title("Circuit 1 Output")
-ax2 = gca;
-subplot(2,2,3), plot(t,c2out), title("Circuit 2 Output")
-ax3 = gca;
-subplot(2,2,4), plot(t,c3out), title("Circuit 3 Output")
-ax4 = gca;
-linkaxes([ax1 ax2 ax3 ax4],'xy')
+% Your audio here
+[audio_timeseries, Fscustom] = sound2ts("evillaugh.wav", T, false);
+% Logarithmic chirp sample
+chirp = audioread("chirp.wav");
 
-% Plot PSD
-plotPowerSpectrum(signal,Fs)
-plotPowerSpectrum(c3out,Fs)
+%% Simulation
+% For this part of the case study, you'll need to simulate the output of
+% each circuit with |signal| as the input using the impulse responses.
+
+f = 100;
+signal = sin(f*2*pi*t); % A simple 100Hz sine wave
+
+%%%%%%%%%%%%%%%%%%
+% YOUR CODE HERE %
+%%%%%%%%%%%%%%%%%%
