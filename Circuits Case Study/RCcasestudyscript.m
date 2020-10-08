@@ -5,7 +5,7 @@
 
 close all;  % Close existing figure dialogs
 %% Set simulation parameters
-T = 3;                 % Simulation duration in seconds
+T = 3;                  % Simulation duration in seconds
 dT = 44100;             % Sample rate
 t = (0:1/dT:(T-1/dT));  % Time vector
 
@@ -42,3 +42,5 @@ signal = sin(f*2*pi*t); % A simple 100Hz sine wave
 %%%%%%%%%%%%%%%%%%
 % YOUR CODE HERE %
 %%%%%%%%%%%%%%%%%%
+figure;
+plot(t,circuit3)

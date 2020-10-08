@@ -7,6 +7,7 @@
 % sample rate of the sound file.
 function [ts, Fs] = sound2ts(filename, simDuration, warnings)
     [audio, Fs] = audioread(filename);
+    audio = audioread(filename);
     t = (0:1/Fs:(simDuration-1/Fs))';
     if length(audio)<length(t)
         if warnings

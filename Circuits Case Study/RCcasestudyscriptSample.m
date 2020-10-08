@@ -5,13 +5,13 @@
 
 close all;  % Close existing figure dialogs
 %% Set simulation parameters
-T = 3;      % Simulation duration
-dT = 44100; % Sample rate
+T = 40;      % Simulation duration
+dT = 100; % Sample rate
 
 %% Set circuit parameters
 %Circuits 1 and 2
 R = 1000;
-C = 2e-6;
+C = 1e-2;
 
 %Circuit 3
 R_1 = 320;
@@ -35,8 +35,9 @@ chirp = audioread("chirp.wav");
 %% Simulation
 % Construct input signal
 t = (0:1/dT:(T-1/dT));  % Time vector
-f = 1;
-signal = chirp(1:length(t)); % A simple 100Hz sine wave
+w = pi/8
+signal = cos(w*t); % A simple 100Hz sine wave
+%signal = square(10*2*pi*t);
 % Simulate results
 c1out = lsim(circuit1, signal, t);
 c2out = lsim(circuit2, signal, t);
@@ -59,21 +60,21 @@ convo = conv(yimp, signal);
 figure;
 plot(t,convo(1:length(t)))
 % Plot PSD
-plotPowerSpectrum(signal,Fs)
-plotPowerSpectrum(c3out,Fs)
+plotPowerSpectrum(signal,dT)
+plotPowerSpectrum(c3out,dT)
 
-%Plot bode
-freqrange = logspace(1,4, 50);
-mag = zeros(size(freqrange));
-%phase = zeros(size(freqrange));
-for f = 1:length(freqrange)
-    signal = sin(2*pi*freqrange(f)*t);
-    sim = lsim(circuit2,signal,t);
-    simtrim = round(length(t)/3); 
-    mag(f) = max(sim(simtrim:end))/max(signal(simtrim:end));
-end
-magdec = 10*log10(mag);
-figure;
-subplot(2,1,1), semilogx(freqrange,magdec), title("Magnitude") 
-%subplot(2,1,2), semilogx(freqrange,phase), title("Phase")
+% %Plot bode
+% freqrange = logspace(1,4, 50);
+% mag = zeros(size(freqrange));
+% %phase = zeros(size(freqrange));
+% for f = 1:length(freqrange)
+%     signal = sin(2*pi*freqrange(f)*t);
+%     sim = lsim(circuit2,signal,t);
+%     simtrim = round(length(t)/3); 
+%     mag(f) = max(sim(simtrim:end))/max(signal(simtrim:end));
+% end
+% magdec = 10*log10(mag);
+% figure;
+% subplot(2,1,1), semilogx(freqrange,magdec), title("Magnitude") 
+% %subplot(2,1,2), semilogx(freqrange,phase), title("Phase")
 
